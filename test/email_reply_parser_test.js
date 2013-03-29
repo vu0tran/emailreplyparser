@@ -2,7 +2,7 @@ var fs = require('fs');
 
 var _  = require('underscore');
 
-var EmailReplyParser = require('../email_reply_parser').EmailReplyParser;
+var EmailReplyParser = require('../lib/emailreplyparser').EmailReplyParser;
 
 function get_email(name) {
 	var data = fs.readFileSync(__dirname + '/emails/' + name + '.txt', 'ascii');
