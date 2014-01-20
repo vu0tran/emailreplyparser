@@ -158,3 +158,18 @@ exports.test_parse_reply = function(test){
     test.equal(EmailReplyParser.read(body).visible_text(), EmailReplyParser.parse_reply(body));
     test.done();
 }
+
+exports.test_correctly_reads_top_post_when_line_starts_with_On = function(test){
+    reply = get_email('email_1_7');
+    test.equal(5, reply.fragments.length);
+
+    test.deepEqual([false, false, true, false, false], _.map(reply.fragments, function(f) { return f.quoted; }));
+    test.deepEqual([false, true, true, true, true], _.map(reply.fragments, function(f) { return f.hidden; }));
+    test.deepEqual([false, true, false, false, true], _.map(reply.fragments, function(f) { return f.signature; }));
+
+    test.ok((new RegExp('^Oh thanks.\n\nOn the')).test(reply.fragments[0].to_s()));
+    test.ok((new RegExp('^-A')).test(reply.fragments[1].to_s()));
+    test.ok((/^On [^\:]+\:/m).test(reply.fragments[2].to_s()));
+    test.ok((new RegExp('^_')).test(reply.fragments[4].to_s()));
+    test.done();
+}
