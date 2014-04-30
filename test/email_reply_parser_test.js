@@ -43,6 +43,7 @@ exports.test_reads_top_post = function(test){
     test.done();
 }
 
+
 exports.test_reads_bottom_post = function(test){
     reply = get_email('email_1_2');
     test.equal(6, reply.fragments.length);
@@ -56,6 +57,24 @@ exports.test_reads_bottom_post = function(test){
     test.ok((/^You can list/m).test(reply.fragments[2].to_s()));
     test.ok((/^> /m).test(reply.fragments[3].to_s()));
     test.ok((new RegExp('^_')).test(reply.fragments[5].to_s()));
+    test.done();
+}
+
+exports.test_reads_inline_replies = function(test){
+    reply = get_email('email_1_8');
+    test.equal(7, reply.fragments.length);
+
+    test.deepEqual([true, false, true, false, true, false, false], _.map(reply.fragments, function(f) { return f.quoted; }));
+    test.deepEqual([false, false, false, false, false, false, true], _.map(reply.fragments, function(f) { return f.signature; }));
+    test.deepEqual([false, false, false, false, true, true, true], _.map(reply.fragments, function(f) { return f.hidden; }));
+
+    test.ok((new RegExp('^On [^\:]+\:')).test(reply.fragments[0].to_s()));
+    test.ok((/^I will reply/m).test(reply.fragments[1].to_s()));
+    test.ok((/^> /m).test(reply.fragments[2].to_s()));
+    test.ok((/^and under this./m).test(reply.fragments[3].to_s()));
+    test.ok((/^> /m).test(reply.fragments[4].to_s()));
+    test.equal('', reply.fragments[5].to_s().trim());
+    test.ok((new RegExp('^-')).test(reply.fragments[6].to_s()));
     test.done();
 }
 
@@ -156,5 +175,20 @@ exports.test_retains_bullets = function(test){
 exports.test_parse_reply = function(test){
     body = get_raw_email('email_1_2');
     test.equal(EmailReplyParser.read(body).visible_text(), EmailReplyParser.parse_reply(body));
+    test.done();
+}
+
+exports.test_correctly_reads_top_post_when_line_starts_with_On = function(test){
+    reply = get_email('email_1_7');
+    test.equal(5, reply.fragments.length);
+
+    test.deepEqual([false, false, true, false, false], _.map(reply.fragments, function(f) { return f.quoted; }));
+    test.deepEqual([false, true, true, true, true], _.map(reply.fragments, function(f) { return f.hidden; }));
+    test.deepEqual([false, true, false, false, true], _.map(reply.fragments, function(f) { return f.signature; }));
+
+    test.ok((new RegExp('^Oh thanks.\n\nOn the')).test(reply.fragments[0].to_s()));
+    test.ok((new RegExp('^-A')).test(reply.fragments[1].to_s()));
+    test.ok((/^On [^\:]+\:/m).test(reply.fragments[2].to_s()));
+    test.ok((new RegExp('^_')).test(reply.fragments[4].to_s()));
     test.done();
 }
