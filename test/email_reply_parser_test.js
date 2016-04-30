@@ -192,3 +192,9 @@ exports.test_correctly_reads_top_post_when_line_starts_with_On = function(test){
     test.ok((new RegExp('^_')).test(reply.fragments[4].to_s()));
     test.done();
 }
+
+exports.test_parse_out_send_from_multiword_gmail = function(test){
+    body = get_raw_email('test_parse_out_send_from_multiword_gmail');
+    test.equal("Awesome! I haven't had another problem with it.", EmailReplyParser.parse_reply(body));
+    test.done();
+}
