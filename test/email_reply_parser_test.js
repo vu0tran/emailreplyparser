@@ -198,3 +198,11 @@ exports.test_parse_out_send_from_multiword_gmail = function(test){
     test.equal("Awesome! I haven't had another problem with it.", EmailReplyParser.parse_reply(body));
     test.done();
 }
+
+
+exports.test_parse_out_send_from_hotmail = function(test){
+    body = get_raw_email('email_hotmail');
+    test.equal("I replied", EmailReplyParser.parse_reply(body));
+    test.done();
+}
+
