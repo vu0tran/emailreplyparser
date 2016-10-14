@@ -5,13 +5,13 @@ var _  = require('underscore');
 var EmailReplyParser = require('../lib/emailreplyparser').EmailReplyParser;
 
 function get_email(name) {
-	var data = fs.readFileSync(__dirname + '/emails/' + name + '.txt', 'ascii');
+	var data = fs.readFileSync(__dirname + '/emails/' + name + '.txt', 'utf-8');
 
 	return EmailReplyParser.read(data);
 }
 
 function get_raw_email(name) {
-  	return fs.readFileSync(__dirname + '/emails/' + name + '.txt', 'ascii');
+  	return fs.readFileSync(__dirname + '/emails/' + name + '.txt', 'utf-8');
 }
 
 exports.test_reads_simple_body = function(test){
@@ -206,3 +206,8 @@ exports.test_parse_out_send_from_hotmail = function(test){
     test.done();
 }
 
+exports.test_parse_out_send_from_french = function(test){
+    body = get_raw_email('email_french');
+    test.equal("On a 60% de test sur toute l'Infra", EmailReplyParser.parse_reply(body));
+    test.done();
+}
